@@ -150,14 +150,16 @@ export default function DayScreen() {
   return (
     <div className="min-h-dvh bg-crema relative">
       {/* Header del día */}
-      <div className="px-5 pt-8 pb-4 bg-gradient-to-b from-rosa-suave to-crema">
+      <div className="relative px-5 pt-8 pb-4 bg-gradient-to-b from-rosa-suave to-crema overflow-hidden">
+        <span className="absolute top-3 right-5 text-rosa-principal/25 text-2xl select-none">✦</span>
+        <span className="absolute top-10 right-12 text-terracota/20 text-sm select-none">✦</span>
         <p className="font-manuscrita text-lg text-terracota capitalize mb-0.5">{fechaStr}</p>
         <h1 className="font-serif-elegante text-3xl font-semibold text-rosa-oscuro leading-tight">
           Día {diaActual}
           <span className="text-lg font-normal text-gris-calido ml-2">de 5</span>
         </h1>
         <p className="font-sans text-base font-semibold text-rosa-oscuro mt-0.5">{diaData.titulo}</p>
-        <p className="font-sans text-xs text-gris-calido mt-1">{diaData.lugares}</p>
+        <p className="font-manuscrita text-base text-gris-calido/80 italic mt-1">{diaData.lugares}</p>
 
         {diaData.descripcion && (
           <p className="font-manuscrita text-sm text-gris-calido mt-1.5 italic">{diaData.descripcion}</p>
@@ -208,7 +210,7 @@ export default function DayScreen() {
               <div className="flex-1">
                 <p className="font-sans text-sm font-semibold text-rosa-oscuro">Espacio libre</p>
                 <p className="font-manuscrita text-base text-gris-calido italic mt-0.5">
-                  algo que te haga feliz hoy, sin reto, solo porque sí
+                  algo que te haga feliz
                 </p>
               </div>
             </div>
@@ -245,7 +247,7 @@ export default function DayScreen() {
             Todavía no hay fotos hoy...
           </p>
           <p className="font-sans text-xs text-gris-calido/60 mt-1">
-            Toca un reto o el botón de abajo para empezar <Em>📷</Em>
+            Toca alguna sugerencia de arriba, o el botón de abajo, para empezar <Em>📷</Em>
           </p>
         </div>
       )}

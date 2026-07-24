@@ -40,7 +40,7 @@ export default function GalleryScreen() {
       {/* Header */}
       <div className="px-5 pt-8 pb-3 bg-gradient-to-b from-rosa-suave to-crema sticky top-0 z-10">
         <h1 className="font-serif-elegante text-3xl font-semibold text-rosa-oscuro mb-3">
-          Tu galería
+          Tu galería <span className="text-rosa-principal/50 text-xl align-middle">✦</span>
         </h1>
 
         {/* Chips de filtro */}

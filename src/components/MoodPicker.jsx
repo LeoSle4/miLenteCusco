@@ -1,5 +1,3 @@
-import Em from './Em';
-
 // Mood SVG icons — estilo kawaii cosy, diseñados a mano
 const MOODS = [
   {
@@ -8,12 +6,11 @@ const MOODS = [
     svg: (
       <svg viewBox="0 0 40 40" width="32" height="32">
         <circle cx="20" cy="20" r="18" fill="#FDF1F5" stroke="#F3AFC7" strokeWidth="1.5" />
-        <circle cx="14" cy="17" r="2" fill="#8A4A61" />
-        <circle cx="26" cy="17" r="2" fill="#8A4A61" />
-        <path d="M13 25 Q20 31 27 25" stroke="#8A4A61" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        <path d="M12 13 Q14 11 16 13" stroke="#F3AFC7" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-        <path d="M24 13 Q26 11 28 13" stroke="#F3AFC7" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-        <circle cx="28" cy="14" r="3" fill="#F3AFC7" opacity="0.4" />
+        <path d="M14 13.5 L15 16.5 L18 16.5 L15.5 18.5 L16.5 21.5 L14 19.5 L11.5 21.5 L12.5 18.5 L10 16.5 L13 16.5Z" fill="#8A4A61" />
+        <path d="M26 13.5 L27 16.5 L30 16.5 L27.5 18.5 L28.5 21.5 L26 19.5 L23.5 21.5 L24.5 18.5 L22 16.5 L25 16.5Z" fill="#8A4A61" />
+        <path d="M14 26 Q20 31 26 26" stroke="#8A4A61" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <circle cx="12" cy="25" r="2.2" fill="#F3AFC7" opacity="0.5" />
+        <circle cx="28" cy="25" r="2.2" fill="#F3AFC7" opacity="0.5" />
       </svg>
     ),
   },
@@ -48,18 +45,15 @@ const MOODS = [
     ),
   },
   {
-    id: 'cosy',
-    label: 'Cosy',
-    labelSuffix: <Em size={14}>🍵</Em>,
+    id: 'agradecida',
+    label: 'Agradecida',
     svg: (
       <svg viewBox="0 0 40 40" width="32" height="32">
         <circle cx="20" cy="20" r="18" fill="#FDF1F5" stroke="#D98B6B" strokeWidth="1.5" />
         <path d="M12 17 Q14 19 16 17" stroke="#8A4A61" strokeWidth="1.8" fill="none" strokeLinecap="round" />
         <path d="M24 17 Q26 19 28 17" stroke="#8A4A61" strokeWidth="1.8" fill="none" strokeLinecap="round" />
         <path d="M14 24 Q20 29 26 24" stroke="#8A4A61" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        <path d="M28 9 Q30 6 32 9 Q30 12 28 9Z" fill="#D98B6B" opacity="0.5" />
-        <circle cx="13" cy="26" r="2.5" fill="#F3AFC7" opacity="0.4" />
-        <circle cx="27" cy="26" r="2.5" fill="#F3AFC7" opacity="0.4" />
+        <path d="M20 25.5 Q21 23.5 23 24.5 Q24.5 26 20 29.5 Q15.5 26 17 24.5 Q19 23.5 20 25.5Z" fill="#D98B6B" opacity="0.55" />
       </svg>
     ),
   },

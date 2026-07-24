@@ -10,27 +10,27 @@ export function getDiaActual() {
   return diff + 1; // 1-based
 }
 
-// Retos por día del viaje a Cusco
+// Sugerencias fotográficas por día del viaje a Cusco
 export const itinerario = [
   {
     dia: 1,
     titulo: 'Llegada a Cusco',
-    lugares: 'Plaza de Armas · Qorikancha · San Blas',
+    lugares: 'Plaza de Armas, Qorikancha, San Blas',
     descripcion: 'Primer día, sin prisa. Deja que Cusco te encuentre a ti.',
     retos: [
       {
         id: 'r1-1',
-        texto: 'La plaza cuando la luz hace algo que no esperabas.',
+        texto: 'La Plaza de Armas, justo cuando la luz decide hacer algo bonito.',
         icono: 'sun',
       },
       {
         id: 'r1-2',
-        texto: 'Una piedra que se siente más vieja que el tiempo.',
+        texto: 'Una piedra inca que parece guardar más siglos de los que debería.',
         icono: 'mountain',
       },
       {
         id: 'r1-3',
-        texto: 'Una calle que parece de otra época.',
+        texto: 'Una calle de San Blas que se siente robada de otro tiempo.',
         icono: 'map-pin',
       },
     ],
@@ -38,22 +38,22 @@ export const itinerario = [
   {
     dia: 2,
     titulo: 'Valle Sagrado',
-    lugares: 'Chinchero · Moray · Salineras · Ollantaytambo · Pisac',
+    lugares: 'Chinchero, Moray, Salineras, Ollantaytambo, Pisac',
     descripcion: 'Día largo, mucho paisaje. Nada es obligatorio, solo lo que se cruce en tu camino.',
     retos: [
       {
         id: 'r2-1',
-        texto: 'Moray visto desde arriba.',
+        texto: 'Moray desde arriba, como un caracol gigante de tierra.',
         icono: 'circle-dashed',
       },
       {
         id: 'r2-2',
-        texto: 'El blanco y el rosa de las Salineras.',
+        texto: 'El blanco y el rosa de las Salineras, como si alguien hubiera derramado algo mágico.',
         icono: 'droplet',
       },
       {
         id: 'r2-3',
-        texto: 'Algo en Pisac que quieras recordar.',
+        texto: 'Algo en Pisac con un olor que se te va a quedar pegado a la memoria.',
         icono: 'shopping-bag',
       },
     ],
@@ -62,44 +62,44 @@ export const itinerario = [
     dia: 3,
     titulo: 'La Montaña',
     lugares: 'Laguna Humantay o Vinicunca',
-    descripcion: 'El día más físico del viaje. Los retos celebran el esfuerzo, no la foto perfecta.',
+    descripcion: 'El día más físico del viaje. Aquí importa más el esfuerzo que la foto perfecta.',
     retos: [
       {
         id: 'r3-1',
-        texto: 'Los colores que te esperaron al llegar.',
+        texto: 'Los colores de la montaña, apareciendo justo cuando llegas.',
         icono: 'photo',
       },
       {
         id: 'r3-2',
-        texto: 'El camino que ya quedó atrás.',
+        texto: 'Tus propias huellas en el camino, la prueba de que sí se pudo.',
         icono: 'footprint',
       },
       {
         id: 'r3-3',
-        texto: 'El momento en que por fin lo ves todo.',
+        texto: 'Ese segundo exacto en que por fin ves todo desde arriba.',
         icono: 'telescope',
       },
     ],
   },
   {
     dia: 4,
-    titulo: 'City Tour',
-    lugares: "Sacsayhuamán · Q'enqo · Puca Pucara · Tambomachay · Cristo Blanco",
+    titulo: 'La ciudad, piedra por piedra',
+    lugares: "Sacsayhuamán, Q'enqo, Puca Pucara, Tambomachay, Cristo Blanco",
     descripcion: 'La ciudad entera te espera.',
     retos: [
       {
         id: 'r4-1',
-        texto: 'Una piedra de Sacsayhuamán que no cabe en el plano.',
+        texto: 'Una piedra de Sacsayhuamán tan grande que da un poco de risa nerviosa.',
         icono: 'building',
       },
       {
         id: 'r4-2',
-        texto: 'Cusco desde arriba, todo junto.',
+        texto: 'Cusco entero, chiquito, a tus pies desde el Cristo Blanco.',
         icono: 'panorama-horizontal',
       },
       {
         id: 'r4-3',
-        texto: 'Un rincón que solo tú notaste.',
+        texto: "Un rincón de Q'enqo, Puca Pucara o Tambomachay que nadie más va a notar.",
         icono: 'sparkles',
       },
     ],
@@ -107,22 +107,22 @@ export const itinerario = [
   {
     dia: 5,
     titulo: 'El último día',
-    lugares: 'Mercado San Pedro · Piedra de los 12 Ángulos · Acueducto de Sapantiana',
+    lugares: 'Mercado San Pedro, Piedra de los 12 Ángulos, Acueducto de Sapantiana',
     descripcion: 'Último día — guardas lo que quieras llevarte.',
     retos: [
       {
         id: 'r5-1',
-        texto: 'Un color del mercado que no existe en otro lado.',
+        texto: 'Los colores del Mercado San Pedro, un caos hermoso.',
         icono: 'palette',
       },
       {
         id: 'r5-2',
-        texto: 'La Piedra de los 12 Ángulos, de cerca.',
+        texto: 'La Piedra de los 12 Ángulos, de cerca, como se merece.',
         icono: 'hexagon',
       },
       {
         id: 'r5-3',
-        texto: 'Lo último que decidiste guardar.',
+        texto: 'Algo pequeño que decidiste llevarte de recuerdo.',
         icono: 'heart',
       },
     ],

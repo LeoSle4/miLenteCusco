@@ -368,10 +368,10 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
               />
             </div>
 
-            {/* Selector de reto */}
+            {/* Con qué se relaciona la foto */}
             <div className="mb-4">
               <p className="font-sans text-xs text-gris-calido mb-2 font-semibold uppercase tracking-wide">
-                ¿A qué reto corresponde?
+                ¿Se cruzó con alguno de estos?
               </p>
               <div className="flex flex-col gap-1.5">
                 {retos.map((reto) => (
@@ -397,7 +397,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
                       : 'border-dashed border-rosa-principal/30 bg-transparent text-gris-calido hover:bg-rosa-suave/30'
                   }`}
                 >
-                  <Em size={20}>💫</Em> Espacio libre — solo porque sí
+                  <Em size={20}>💫</Em> Espacio libre
                 </button>
               </div>
             </div>

@@ -4,8 +4,7 @@ import { itinerario, FECHA_INICIO } from '../data/itinerary';
 import { MOODS } from './MoodPicker';
 import Em from './Em';
 
-const SPOTIFY_PLACEHOLDER = 'https://open.spotify.com/embed/playlist/37i9dQZF1DX6XceWZP1znY?utm_source=generator';
-// Cuando tengas la playlist real, reemplaza el ID arriba
+const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/39UnqAUi8AS7jfc3GtEda0?utm_source=generator';
 
 const ROTATIONS_ALBUM = [-1.2, 0.8, -0.5, 1.1, 0, -0.9, 0.6, -0.4, 0.9, -0.7];
 
@@ -114,7 +113,7 @@ export default function AlbumScreen() {
               <h2 className="font-serif-elegante text-3xl font-semibold text-rosa-oscuro leading-tight">
                 {dia.titulo}
               </h2>
-              <p className="font-sans text-xs text-gris-calido mt-1">{dia.lugares}</p>
+              <p className="font-manuscrita text-base text-gris-calido/80 italic mt-1">{dia.lugares}</p>
             </div>
             {/* Mascota asomándose */}
             <div className="flex-shrink-0 animate-flotar" style={{ animationDelay: `${diaIdx * 0.4}s` }}>
@@ -235,7 +234,7 @@ export default function AlbumScreen() {
           </p>
           <div className="rounded-2xl overflow-hidden shadow-card">
             <iframe
-              src={SPOTIFY_PLACEHOLDER}
+              src={SPOTIFY_EMBED}
               width="100%"
               height="152"
               frameBorder="0"
