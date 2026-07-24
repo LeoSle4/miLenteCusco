@@ -165,6 +165,7 @@ body {
 
 /* ── Polaroid ──────────────────────────────────────────────────────── */
 .polaroid-wrap {
+  position: relative;
   background: white;
   padding: 0.5rem 0.5rem 2rem 0.5rem;
   border-radius: 4px;
@@ -176,6 +177,42 @@ body {
 .polaroid-wrap:hover {
   box-shadow: 0 8px 24px rgba(143, 74, 97, 0.18);
   transform: translateY(-4px) scale(1.02);
+}
+
+/* ── Washi tape decorativo ─────────────────────────────────────────── */
+.washi-tape {
+  position: absolute;
+  top: -0.65rem;
+  left: 50%;
+  width: 2.75rem;
+  height: 1.1rem;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(138, 74, 97, 0.18);
+  opacity: 0.85;
+}
+
+.washi-tape::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0px,
+    rgba(255, 255, 255, 0.35) 3px,
+    transparent 3px,
+    transparent 7px
+  );
+}
+
+/* ── Galería tipo masonry (evita huecos cuando las fotos tienen distinto formato) ── */
+.masonry-cols {
+  column-count: 2;
+  column-gap: 1rem;
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
 }
 
 /* ── Botón FAB ─────────────────────────────────────────────────────── */

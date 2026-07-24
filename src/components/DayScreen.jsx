@@ -224,9 +224,11 @@ export default function DayScreen() {
             <p className="font-sans text-xs font-semibold text-gris-calido uppercase tracking-wider mb-3">
               Tus fotos de hoy ({fotos.length})
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="masonry-cols">
               {fotos.map((foto, i) => (
-                <PolaroidCard key={foto.id} foto={foto} index={i} />
+                <div key={foto.id} className="masonry-item">
+                  <PolaroidCard foto={foto} index={i} />
+                </div>
               ))}
             </div>
           </div>

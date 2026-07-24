@@ -109,10 +109,12 @@ export default function GalleryScreen() {
                   <hr className="flex-1 separador-hairline my-0" />
                 </div>
 
-                {/* Grid de fotos tipo masonry simple */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Grid de fotos tipo masonry: cada foto conserva su formato sin dejar huecos */}
+                <div className="masonry-cols">
                   {dia.fotos.map((foto, i) => (
-                    <PolaroidCard key={foto.id} foto={foto} index={i} />
+                    <div key={foto.id} className="masonry-item">
+                      <PolaroidCard foto={foto} index={i} />
+                    </div>
                   ))}
                 </div>
               </section>
