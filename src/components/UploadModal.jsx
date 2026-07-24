@@ -186,7 +186,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
               </button>
             </div>
             <p className="font-manuscrita text-base text-gris-calido mb-6">
-              Elige cómo quieres capturar este momento <Em>✨</Em>
+              Elige el formato en como quieres que se enmarque la foto <Em>✨</Em>
             </p>
 
             {/* Cards de formato */}
@@ -360,8 +360,8 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
                         <circle cx="12" cy="12" r="3.5" />
                         <circle cx="17.5" cy="8" r="1" fill="currentColor" stroke="none" />
                       </svg>
-                      <span className="font-sans text-sm font-semibold">Toca para elegir foto</span>
-                      <span className="font-sans text-xs opacity-60">desde cámara o galería</span>
+                      <span className="font-sans text-sm font-semibold">Toca para elegir la foto</span>
+                      <span className="font-sans text-xs opacity-60">desde tu cámara o galería</span>
                     </>
                   )}
                 </button>
@@ -379,7 +379,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
             {/* Con qué se relaciona la foto */}
             <div className="mb-4">
               <p className="font-sans text-xs text-gris-calido mb-2 font-semibold uppercase tracking-wide">
-                ¿Se cruzó con alguno de estos?
+                ¿Pudiste tomar foto a alguno de estos?
               </p>
               <div className="flex flex-col gap-1.5">
                 {retos.map((reto) => (

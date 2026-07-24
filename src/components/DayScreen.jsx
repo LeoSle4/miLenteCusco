@@ -171,7 +171,7 @@ export default function DayScreen() {
       {/* Retos del día */}
       <div className="px-5 pb-4">
         <p className="font-sans text-xs font-semibold text-gris-calido uppercase tracking-wider mb-3">
-          Si lo ves, captúralo <Em>✨</Em>
+          CAPTURA LO QUE VES<Em>✨</Em>
         </p>
 
         <div className="flex flex-col gap-3">
@@ -245,9 +245,6 @@ export default function DayScreen() {
           </div>
           <p className="font-manuscrita text-xl text-gris-calido">
             Todavía no hay fotos hoy...
-          </p>
-          <p className="font-sans text-xs text-gris-calido/60 mt-1">
-            Toca alguna sugerencia de arriba, o el botón de abajo, para empezar <Em>📷</Em>
           </p>
         </div>
       )}

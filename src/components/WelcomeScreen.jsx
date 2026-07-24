@@ -29,7 +29,7 @@ export default function WelcomeScreen({ onContinue }) {
 
         {/* Títulos */}
         <div>
-          <p className="font-manuscrita text-2xl text-terracota mb-1">bienvenida a tu</p>
+          <p className="font-manuscrita text-2xl text-terracota mb-1">bienvenida Pam a</p>
           <h1 className="font-serif-elegante text-4xl font-semibold text-rosa-oscuro mb-3">
             Mi Lente en Cusco
           </h1>
@@ -39,8 +39,7 @@ export default function WelcomeScreen({ onContinue }) {
 
           <p className="font-manuscrita text-xl text-gris-calido leading-relaxed max-w-xs mx-auto">
             Cada foto que tomes aquí es un momento que elegiste guardar.
-            Sin reglas, sin lista de tareas.
-            Solo tú y lo que te hace feliz hoy. <Em>🌸</Em>
+            Toma foto a lo que te haga más feliz Licenciada. <Em>🌸</Em>
           </p>
         </div>
 
@@ -62,11 +61,12 @@ export default function WelcomeScreen({ onContinue }) {
           id="btn-empezar-viaje"
           className="mt-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-rosa-principal to-rosa-medio text-white font-sans font-semibold text-base shadow-fab hover:shadow-polaroid-hover hover:scale-105 active:scale-95 transition-all duration-200"
         >
-          Empezar a capturar <Em>✨</Em>
+          Empezar <Em>✨</Em>
         </button>
       </div>
 
       {/* Footer decorativo */}
+      <p> </p>
       <p className="font-manuscrita text-gris-calido text-lg opacity-60">
         Cusco 2026 <Em>🏔️</Em>
       </p>
