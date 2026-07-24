@@ -16,7 +16,7 @@ const ASPECT_POR_FORMATO = {
   horizontal: '16 / 9',
 };
 
-export default function PolaroidCard({ foto, index = 0 }) {
+export default function PolaroidCard({ foto, index = 0, onClick }) {
   const rotation = ROTATIONS[index % ROTATIONS.length];
   const mood = foto.mood ? MOODS.find((m) => m.id === foto.mood) : null;
   const aspectRatio = ASPECT_POR_FORMATO[foto.formato] || '1 / 1';
@@ -26,6 +26,7 @@ export default function PolaroidCard({ foto, index = 0 }) {
     <div
       className="polaroid-wrap cursor-pointer"
       style={{ transform: `rotate(${rotation}deg)` }}
+      onClick={onClick}
     >
       {/* Cinta washi decorativa */}
       <div

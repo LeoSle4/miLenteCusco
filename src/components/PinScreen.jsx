@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import Em from './Em';
 
-const CORRECT_PIN = '0306';
+const PINES = {
+  '0306': 'pam',
+  '1907': 'leo',
+};
 
 export default function PinScreen({ onSuccess }) {
   const [digits, setDigits] = useState(['', '', '', '']);
@@ -54,8 +57,9 @@ export default function PinScreen({ onSuccess }) {
   function checkPin(pin) {
     setChecking(true);
     setTimeout(() => {
-      if (pin === CORRECT_PIN) {
-        onSuccess();
+      const rol = PINES[pin];
+      if (rol) {
+        onSuccess(rol);
       } else {
         setError(true);
         setShake(true);

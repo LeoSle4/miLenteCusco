@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { obtenerFotos, obtenerFotosPendientes, suscribirFotos } from '../lib/fotos';
-import { itinerario } from '../data/itinerary';
+import { itinerario, obtenerTextoReto } from '../data/itinerary';
+import { useAuth } from '../AuthContext';
 import PolaroidCard from './PolaroidCard';
+import FotoDetalle from './FotoDetalle';
 import Em from './Em';
 
 export default function GalleryScreen() {
+  const { rol } = useAuth();
   const [fotos, setFotos] = useState([]);
   const [filtro, setFiltro] = useState(null); // null = todos los días
   const [loading, setLoading] = useState(true);
+  const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
 
   useEffect(() => {
     cargarFotos();
@@ -113,7 +117,7 @@ export default function GalleryScreen() {
                 <div className="masonry-cols">
                   {dia.fotos.map((foto, i) => (
                     <div key={foto.id} className="masonry-item">
-                      <PolaroidCard foto={foto} index={i} />
+                      <PolaroidCard foto={foto} index={i} onClick={() => setFotoSeleccionada(foto)} />
                     </div>
                   ))}
                 </div>
@@ -129,6 +133,15 @@ export default function GalleryScreen() {
           </div>
         )}
       </div>
+
+      {fotoSeleccionada && (
+        <FotoDetalle
+          foto={fotoSeleccionada}
+          retoTexto={obtenerTextoReto(fotoSeleccionada.dia, fotoSeleccionada.reto_id)}
+          rol={rol}
+          onClose={() => setFotoSeleccionada(null)}
+        />
+      )}
     </div>
   );
 }

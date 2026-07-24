@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { obtenerFotos, obtenerFotosPendientes } from '../lib/fotos';
-import { itinerario, FECHA_INICIO } from '../data/itinerary';
+import { itinerario, FECHA_INICIO, obtenerTextoReto } from '../data/itinerary';
+import { useAuth } from '../AuthContext';
 import { MOODS } from './MoodPicker';
+import FotoDetalle from './FotoDetalle';
 import Em from './Em';
 
 const SPOTIFY_EMBED = 'https://open.spotify.com/embed/playlist/39UnqAUi8AS7jfc3GtEda0?utm_source=generator';
@@ -15,8 +17,10 @@ const ALBUM_FORMATO = {
 };
 
 export default function AlbumScreen() {
+  const { rol } = useAuth();
   const [fotos, setFotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
 
   useEffect(() => {
     Promise.all([obtenerFotos(), obtenerFotosPendientes()]).then(([remotas, pendientes]) => {
@@ -143,12 +147,13 @@ export default function AlbumScreen() {
                   >
                     {/* Foto estilo scrapbook */}
                     <div
-                      className="polaroid-wrap flex-shrink-0"
+                      className="polaroid-wrap flex-shrink-0 cursor-pointer"
                       style={{
                         transform: `rotate(${rotation}deg)`,
                         width,
                         position: 'relative',
                       }}
+                      onClick={() => setFotoSeleccionada(foto)}
                     >
                       <div className="overflow-hidden rounded-sm bg-rosa-suave" style={{ aspectRatio }}>
                         {foto.imageUrl || foto.imageData ? (
@@ -176,6 +181,13 @@ export default function AlbumScreen() {
 
                     {/* Nota manuscrita en el margen */}
                     <div className={`flex-1 flex flex-col justify-center gap-2 ${isLeft ? 'pt-4' : 'pt-4'}`}>
+                      <span className="etiqueta w-fit">
+                        {foto.reto_id ? (
+                          <><Em size={12}>✨</Em> Sugerencia #{dia.retos.findIndex((r) => r.id === foto.reto_id) + 1}</>
+                        ) : (
+                          <><Em size={12}>💫</Em> Espacio libre</>
+                        )}
+                      </span>
                       {foto.nota && (
                         <p className="font-manuscrita text-xl text-rosa-oscuro leading-relaxed">
                           &ldquo;{foto.nota}&rdquo;
@@ -260,6 +272,15 @@ export default function AlbumScreen() {
           </div>
         </div>
       </section>
+
+      {fotoSeleccionada && (
+        <FotoDetalle
+          foto={fotoSeleccionada}
+          retoTexto={obtenerTextoReto(fotoSeleccionada.dia, fotoSeleccionada.reto_id)}
+          rol={rol}
+          onClose={() => setFotoSeleccionada(null)}
+        />
+      )}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { itinerario, getDiaActual } from '../data/itinerary';
+import { itinerario, getDiaActual, obtenerTextoReto } from '../data/itinerary';
 import { obtenerFotosPorDia, obtenerFotosPendientes, suscribirFotos } from '../lib/fotos';
+import { useAuth } from '../AuthContext';
 import UploadModal from './UploadModal';
 import PolaroidCard from './PolaroidCard';
+import FotoDetalle from './FotoDetalle';
 import Em from './Em';
 
 // Iconos SVG inline por tipo
@@ -90,10 +92,12 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 
 export default function DayScreen() {
   const navigate = useNavigate();
+  const { rol } = useAuth();
   const diaActual = getDiaActual();
   const [fotos, setFotos] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [retoPresel, setRetoPresel] = useState(null);
+  const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
 
   // Si el viaje terminó, ir al álbum
   useEffect(() => {
@@ -130,6 +134,8 @@ export default function DayScreen() {
     setRetoPresel(retoId);
     setModalOpen(true);
   }
+
+  const retosCumplidos = new Set(fotos.filter((f) => f.reto_id).map((f) => f.reto_id));
 
   // Fecha actual formateada
   const ahora = new Date();
@@ -177,23 +183,34 @@ export default function DayScreen() {
         <div className="flex flex-col gap-3">
           {diaData.retos.map((reto) => {
             const Icon = IconMap[reto.icono] || IconMap.sparkles;
+            const cumplido = retosCumplidos.has(reto.id);
             return (
               <div
                 key={reto.id}
-                className="reto-card group"
+                className={`reto-card group ${cumplido ? 'opacity-60' : ''}`}
                 onClick={() => abrirModal(reto.id)}
               >
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 text-terracota flex-shrink-0">
                     <Icon />
                   </div>
-                  <p className="font-sans text-sm text-rosa-oscuro leading-relaxed flex-1">
+                  <p className={`font-sans text-sm text-rosa-oscuro leading-relaxed flex-1 ${cumplido ? 'line-through decoration-terracota/60' : ''}`}>
                     {reto.texto}
                   </p>
-                  <div className="text-rosa-principal/40 group-hover:text-rosa-principal transition-colors flex-shrink-0 mt-0.5">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="12" cy="12" r="3" />
-                    </svg>
+                  <div className="flex-shrink-0 mt-0.5">
+                    {cumplido ? (
+                      <span className="text-terracota">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      </span>
+                    ) : (
+                      <div className="text-rosa-principal/40 group-hover:text-rosa-principal transition-colors">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                          <rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -229,7 +246,7 @@ export default function DayScreen() {
             <div className="masonry-cols">
               {fotos.map((foto, i) => (
                 <div key={foto.id} className="masonry-item">
-                  <PolaroidCard foto={foto} index={i} />
+                  <PolaroidCard foto={foto} index={i} onClick={() => setFotoSeleccionada(foto)} />
                 </div>
               ))}
             </div>
@@ -271,6 +288,15 @@ export default function DayScreen() {
           diaActual={diaActual}
           retos={diaData.retos}
           retoPreseleccionado={retoPresel}
+        />
+      )}
+
+      {fotoSeleccionada && (
+        <FotoDetalle
+          foto={fotoSeleccionada}
+          retoTexto={obtenerTextoReto(fotoSeleccionada.dia, fotoSeleccionada.reto_id)}
+          rol={rol}
+          onClose={() => setFotoSeleccionada(null)}
         />
       )}
     </div>

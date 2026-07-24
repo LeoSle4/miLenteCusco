@@ -129,4 +129,12 @@ export const itinerario = [
   },
 ];
 
+// Texto de la sugerencia que una foto cumplió, o null si fue del espacio libre.
+export function obtenerTextoReto(dia, retoId) {
+  if (!retoId) return null;
+  const diaData = itinerario.find((d) => d.dia === dia);
+  const reto = diaData?.retos.find((r) => r.id === retoId);
+  return reto?.texto || null;
+}
+
 export default itinerario;
