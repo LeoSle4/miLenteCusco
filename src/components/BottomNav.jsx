@@ -1,8 +1,4 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  IconSun,
-  IconPhoto,
-} from '@tabler/icons-react';
 
 export default function BottomNav() {
   const location = useLocation();

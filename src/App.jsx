@@ -12,11 +12,10 @@ import { iniciarSincronizacion } from './lib/fotos';
 // ── Context de autenticación ──────────────────────────────────────────
 const AuthContext = createContext(null);
 
-export function useAuth() {
+function useAuth() {
   return useContext(AuthContext);
 }
 
-const CORRECT_PIN = '0306';
 const PIN_KEY = 'mlc_pin_verified';
 const WELCOME_SEEN_KEY = 'mlc_welcome_seen';
 
@@ -45,12 +44,14 @@ function ProtectedRoute({ children }) {
 export default function App() {
   const [isAuthed, setIsAuthed] = useState(false);
   const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     const pinOk = localStorage.getItem(PIN_KEY) === 'true';
     const welcomeOk = localStorage.getItem(WELCOME_SEEN_KEY) === 'true';
     setIsAuthed(pinOk);
     setHasSeenWelcome(welcomeOk);
+    setAuthChecked(true);
   }, []);
 
   useEffect(() => {
@@ -65,6 +66,12 @@ export default function App() {
   function handleWelcomeDone() {
     localStorage.setItem(WELCOME_SEEN_KEY, 'true');
     setHasSeenWelcome(true);
+  }
+
+  // Evita que una recarga directa en /galeria o /album rebote a /hoy mientras
+  // se lee el estado de autenticación guardado en localStorage.
+  if (!authChecked) {
+    return null;
   }
 
   return (

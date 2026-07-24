@@ -333,7 +333,10 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
               ) : (
                 // Todavía no eligió foto
                 <button
-                  onClick={() => inputRef.current?.click()}
+                  onClick={() => {
+                    if (inputRef.current) inputRef.current.value = '';
+                    inputRef.current?.click();
+                  }}
                   id="btn-seleccionar-foto"
                   className="w-full rounded-2xl border-2 border-dashed border-rosa-principal/50 bg-rosa-suave flex flex-col items-center justify-center gap-2 text-rosa-oscuro/60 hover:bg-rosa-suave/80 hover:border-rosa-principal transition-all"
                   style={{ ...formatoActual.previewStyle, minHeight: '160px' }}

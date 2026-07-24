@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../App';
 import Em from './Em';
 
 const CORRECT_PIN = '0306';
@@ -12,8 +11,9 @@ export default function PinScreen({ onSuccess }) {
   const inputRefs = [useRef(), useRef(), useRef(), useRef()];
 
   useEffect(() => {
-    // Auto-focus primer input
+    // Auto-focus primer input al montar (los refs en sí son estables entre renders)
     inputRefs[0].current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleChange(index, value) {

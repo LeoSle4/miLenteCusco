@@ -337,6 +337,7 @@ body {
 
 /* ── Album final scrapbook ──────────────────────────────────────────── */
 .album-portada {
+  position: relative;
   background: linear-gradient(160deg, #FDF1F5 0%, #FFF3E4 50%, #FDF1F5 100%);
   min-height: 100dvh;
   display: flex;
@@ -390,6 +391,15 @@ body {
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* ── Ocultar scrollbar (chips de filtro, etc.) ──────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* ── Utilidades ─────────────────────────────────────────────────────── */

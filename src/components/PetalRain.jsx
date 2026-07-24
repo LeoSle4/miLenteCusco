@@ -1,20 +1,5 @@
 import { useEffect, useState } from 'react';
 
-// SVG de pétalo estilizado
-function Petal({ style }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="14"
-      height="14"
-      style={style}
-      className="absolute pointer-events-none"
-    >
-      <ellipse cx="12" cy="12" rx="6" ry="10" fill="#F3AFC7" opacity="0.5" transform="rotate(30 12 12)" />
-    </svg>
-  );
-}
-
 export default function PetalRain() {
   const [petals, setPetals] = useState([]);
 

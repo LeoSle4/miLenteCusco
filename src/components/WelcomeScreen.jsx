@@ -51,7 +51,7 @@ export default function WelcomeScreen({ onContinue }) {
             <span className="font-sans text-sm text-rosa-oscuro">
               {diaActual === null
                 ? 'El viaje comienza pronto'
-                : `Día ${diaActual} de 5`}
+                : `Día ${Math.min(diaActual, 5)} de 5`}
             </span>
           </div>
         )}

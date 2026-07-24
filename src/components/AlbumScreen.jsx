@@ -80,7 +80,7 @@ export default function AlbumScreen() {
             {formatFecha(fechaInicio)} — {formatFecha(fechaFin)}
           </p>
           <p className="font-manuscrita text-lg text-rosa-oscuro mt-2">
-            {totalFotos} momentos guardados <Em>🌸</Em>
+            {totalFotos} {totalFotos === 1 ? 'momento guardado' : 'momentos guardados'} <Em>🌸</Em>
           </p>
         </div>
 
@@ -178,7 +178,7 @@ export default function AlbumScreen() {
                     <div className={`flex-1 flex flex-col justify-center gap-2 ${isLeft ? 'pt-4' : 'pt-4'}`}>
                       {foto.nota && (
                         <p className="font-manuscrita text-xl text-rosa-oscuro leading-relaxed">
-                          "{foto.nota}"
+                          &ldquo;{foto.nota}&rdquo;
                         </p>
                       )}
                       {mood && (

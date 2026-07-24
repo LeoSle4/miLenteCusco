@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { itinerario, getDiaActual } from '../data/itinerary';
 import { obtenerFotosPorDia, obtenerFotosPendientes, suscribirFotos } from '../lib/fotos';
@@ -104,6 +104,16 @@ export default function DayScreen() {
 
   const diaData = itinerario[Math.min((diaActual || 1) - 1, 4)];
 
+  const cargarFotos = useCallback(async () => {
+    if (!diaActual) return;
+    const [remotas, pendientes] = await Promise.all([
+      obtenerFotosPorDia(diaActual),
+      obtenerFotosPendientes(),
+    ]);
+    const pendientesDia = pendientes.filter((p) => p.dia === diaActual);
+    setFotos([...remotas, ...pendientesDia]);
+  }, [diaActual]);
+
   useEffect(() => {
     cargarFotos();
     window.addEventListener('mlc:cola-actualizada', cargarFotos);
@@ -114,17 +124,7 @@ export default function DayScreen() {
       window.removeEventListener('mlc:cola-actualizada', cargarFotos);
       desuscribir();
     };
-  }, [diaActual]);
-
-  async function cargarFotos() {
-    if (!diaActual) return;
-    const [remotas, pendientes] = await Promise.all([
-      obtenerFotosPorDia(diaActual),
-      obtenerFotosPendientes(),
-    ]);
-    const pendientesDia = pendientes.filter((p) => p.dia === diaActual);
-    setFotos([...remotas, ...pendientesDia]);
-  }
+  }, [diaActual, cargarFotos]);
 
   function abrirModal(retoId = null) {
     setRetoPresel(retoId);
