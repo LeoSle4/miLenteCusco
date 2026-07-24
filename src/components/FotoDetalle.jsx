@@ -24,6 +24,10 @@ export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
   const [enviando, setEnviando] = useState(false);
   const finRef = useRef(null);
 
+  function irAlFinal() {
+    requestAnimationFrame(() => finRef.current?.scrollIntoView({ behavior: 'smooth' }));
+  }
+
   const mood = foto.mood ? MOODS.find((m) => m.id === foto.mood) : null;
   const aspectRatio = ASPECT_POR_FORMATO[foto.formato] || '1 / 1';
   const autor = NOMBRE_POR_ROL[rol] || 'Alguien';
@@ -44,6 +48,7 @@ export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
     });
     const desuscribirComentarios = suscribirComentarios(foto.id, (nuevo) => {
       setComentarios((prev) => (prev.some((c) => c.id === nuevo.id) ? prev : [...prev, nuevo]));
+      irAlFinal();
     });
     const desuscribirReacciones = suscribirReacciones(foto.id, () => {
       obtenerReacciones(foto.id).then(setReacciones);
@@ -71,10 +76,6 @@ export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
     }
   }
 
-  useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [comentarios.length]);
-
   async function handleEnviar() {
     const limpio = texto.trim();
     if (!limpio || esFotoPendiente) return;
@@ -83,6 +84,7 @@ export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
       const nuevo = await agregarComentario({ fotoId: foto.id, autor, texto: limpio });
       setComentarios((prev) => (prev.some((c) => c.id === nuevo.id) ? prev : [...prev, nuevo]));
       setTexto('');
+      irAlFinal();
     } catch (err) {
       // Si falla, no perdemos lo que escribió: se queda en el input para reintentar.
     } finally {
