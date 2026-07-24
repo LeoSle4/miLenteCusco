@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import imageCompression from 'browser-image-compression';
+import Cropper from 'react-easy-crop';
 import MoodPicker from './MoodPicker';
 import { guardarFoto } from '../lib/fotos';
-import { cropToAspect, RATIOS } from '../lib/imageUtils';
+import { extraerRecorte, RATIOS } from '../lib/imageUtils';
 import Em from './Em';
 
 // Formatos disponibles
@@ -51,12 +52,17 @@ const FORMATOS = [
 export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPreseleccionado }) {
   const [step, setStep] = useState('formato'); // 'formato' | 'foto'
   const [formato, setFormato] = useState(null);
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [rawPreview, setRawPreview] = useState(null); // foto comprimida, sin recortar aún
+  const [croppedFile, setCroppedFile] = useState(null); // resultado final ya recortado
+  const [croppedPreview, setCroppedPreview] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [nota, setNota] = useState('');
   const [mood, setMood] = useState(null);
   const [retoId, setRetoId] = useState(retoPreseleccionado || '__libre__');
   const [compressing, setCompressing] = useState(false);
+  const [cropping, setCropping] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const inputRef = useRef();
@@ -75,7 +81,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
 
     try {
       // Comprime primero conservando buena resolución (además corrige la orientación EXIF
-      // de las fotos del iPhone, algo que el recorte por canvas necesita ya resuelto).
+      // de las fotos del iPhone). El recorte lo hace ella misma en el paso siguiente.
       const options = {
         maxSizeMB: 2,
         maxWidthOrHeight: 2000,
@@ -83,15 +89,12 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
         useWebWorker: true,
       };
       const compressed = await imageCompression(f, options);
-
-      // Recorta al formato elegido en el paso anterior, para que se cumpla de verdad
-      // y no solo se vea recortado en la vista previa.
-      const ratio = RATIOS[formatoActual.id] || RATIOS.cuadrado;
-      const recortado = await cropToAspect(compressed, ratio);
-
-      setFile(recortado);
-      const url = URL.createObjectURL(recortado);
-      setPreview(url);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedAreaPixels(null);
+      setCroppedFile(null);
+      setCroppedPreview(null);
+      setRawPreview(URL.createObjectURL(compressed));
     } catch (err) {
       setError('No se pudo procesar la imagen. Intenta de nuevo.');
     } finally {
@@ -99,16 +102,41 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
     }
   }
 
+  const onCropComplete = useCallback((_, areaPixels) => {
+    setCroppedAreaPixels(areaPixels);
+  }, []);
+
+  async function confirmarRecorte() {
+    if (!rawPreview || !croppedAreaPixels) return;
+    setCropping(true);
+    setError('');
+    try {
+      const blob = await extraerRecorte(rawPreview, croppedAreaPixels);
+      setCroppedFile(blob);
+      setCroppedPreview(URL.createObjectURL(blob));
+    } catch (err) {
+      setError('No se pudo recortar la imagen. Intenta de nuevo.');
+    } finally {
+      setCropping(false);
+    }
+  }
+
+  function retomarFoto() {
+    setRawPreview(null);
+    setCroppedFile(null);
+    setCroppedPreview(null);
+  }
+
   async function handleSave() {
-    if (!file) {
-      setError('Selecciona una foto primero.');
+    if (!croppedFile) {
+      setError('Selecciona y ajusta una foto primero.');
       return;
     }
 
     setSaving(true);
     try {
       await guardarFoto({
-        file,
+        file: croppedFile,
         dia: diaActual,
         retoId: retoId === '__libre__' ? null : retoId,
         nota: nota.trim(),
@@ -125,6 +153,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
   }
 
   const formatoActual = formato || FORMATOS[1];
+  const ratioActual = RATIOS[formatoActual.id] || RATIOS.cuadrado;
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -200,7 +229,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => { setStep('formato'); setFile(null); setPreview(null); }}
+                  onClick={() => { setStep('formato'); retomarFoto(); }}
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-rosa-suave text-gris-calido hover:bg-rosa-principal/20 transition-colors"
                   id="btn-volver-formato"
                 >
@@ -231,15 +260,16 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
 
             {/* Zona de foto */}
             <div className="mb-4">
-              {preview ? (
+              {croppedPreview ? (
+                // Recorte ya confirmado
                 <div className="relative w-full overflow-hidden rounded-2xl border border-rosa-principal/20" style={formatoActual.previewStyle}>
                   <img
-                    src={preview}
+                    src={croppedPreview}
                     alt="Preview"
                     className="w-full h-full object-cover"
                   />
                   <button
-                    onClick={() => { setFile(null); setPreview(null); }}
+                    onClick={retomarFoto}
                     className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-rosa-oscuro shadow"
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -247,7 +277,61 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
                     </svg>
                   </button>
                 </div>
+              ) : rawPreview ? (
+                // Ella ajusta el recorte: arrastra para mover, desliza para hacer zoom
+                <div>
+                  <div
+                    className="relative w-full overflow-hidden rounded-2xl border border-rosa-principal/20 bg-black"
+                    style={formatoActual.previewStyle}
+                  >
+                    <Cropper
+                      image={rawPreview}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={ratioActual}
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onCropComplete={onCropComplete}
+                      objectFit="contain"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 mt-3">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-gris-calido flex-shrink-0">
+                      <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+                    </svg>
+                    <input
+                      type="range"
+                      min={1}
+                      max={3}
+                      step={0.01}
+                      value={zoom}
+                      onChange={(e) => setZoom(Number(e.target.value))}
+                      className="flex-1 accent-rosa-principal"
+                      id="input-zoom"
+                    />
+                  </div>
+                  <p className="font-manuscrita text-sm text-gris-calido/70 text-center italic mt-1">
+                    Arrastra para acomodar, desliza para hacer zoom
+                  </p>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={retomarFoto}
+                      className="flex-1 py-3 rounded-xl border border-rosa-principal/30 text-gris-calido font-sans text-sm font-semibold hover:bg-rosa-suave/50 transition-colors"
+                    >
+                      Cambiar foto
+                    </button>
+                    <button
+                      onClick={confirmarRecorte}
+                      disabled={cropping || !croppedAreaPixels}
+                      id="btn-confirmar-recorte"
+                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-rosa-principal to-rosa-medio text-white font-sans text-sm font-semibold disabled:opacity-50 transition-all"
+                    >
+                      {cropping ? 'Ajustando…' : 'Usar este recorte'}
+                    </button>
+                  </div>
+                </div>
               ) : (
+                // Todavía no eligió foto
                 <button
                   onClick={() => inputRef.current?.click()}
                   id="btn-seleccionar-foto"
@@ -350,7 +434,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
             {/* Botón guardar */}
             <button
               onClick={handleSave}
-              disabled={saving || compressing || !file}
+              disabled={saving || compressing || !croppedFile}
               id="btn-guardar-foto"
               className="w-full py-4 rounded-2xl bg-gradient-to-r from-rosa-principal to-rosa-medio text-white font-sans font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-fab active:scale-95 transition-all duration-200"
             >
