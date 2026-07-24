@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import imageCompression from 'browser-image-compression';
 import MoodPicker from './MoodPicker';
 import { guardarFoto } from '../lib/fotos';
+import { cropToAspect, RATIOS } from '../lib/imageUtils';
 import Em from './Em';
 
 // Formatos disponibles
@@ -73,14 +74,23 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
     setError('');
 
     try {
+      // Comprime primero conservando buena resolución (además corrige la orientación EXIF
+      // de las fotos del iPhone, algo que el recorte por canvas necesita ya resuelto).
       const options = {
-        maxSizeMB: 0.8,
-        maxWidthOrHeight: 1200,
+        maxSizeMB: 2,
+        maxWidthOrHeight: 2000,
+        initialQuality: 0.9,
         useWebWorker: true,
       };
       const compressed = await imageCompression(f, options);
-      setFile(compressed);
-      const url = URL.createObjectURL(compressed);
+
+      // Recorta al formato elegido en el paso anterior, para que se cumpla de verdad
+      // y no solo se vea recortado en la vista previa.
+      const ratio = RATIOS[formatoActual.id] || RATIOS.cuadrado;
+      const recortado = await cropToAspect(compressed, ratio);
+
+      setFile(recortado);
+      const url = URL.createObjectURL(recortado);
       setPreview(url);
     } catch (err) {
       setError('No se pudo procesar la imagen. Intenta de nuevo.');

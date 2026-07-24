@@ -102,6 +102,7 @@ export async function obtenerFotosPendientes() {
     reto_id: p.retoId || null,
     nota: p.nota || '',
     mood: p.mood || null,
+    formato: p.formato || 'cuadrado',
     imageUrl: URL.createObjectURL(p.file),
     created_at: new Date(p.timestamp).toISOString(),
     pendiente: true,

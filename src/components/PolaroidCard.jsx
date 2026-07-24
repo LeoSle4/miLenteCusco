@@ -3,9 +3,16 @@ import { MOODS } from './MoodPicker';
 // Rotaciones predefinidas sutiles (máximo 1°)
 const ROTATIONS = [-1, 0.5, -0.5, 1, 0, -0.8, 0.3, -0.3];
 
+const ASPECT_POR_FORMATO = {
+  vertical: '9 / 16',
+  cuadrado: '1 / 1',
+  horizontal: '16 / 9',
+};
+
 export default function PolaroidCard({ foto, index = 0 }) {
   const rotation = ROTATIONS[index % ROTATIONS.length];
   const mood = foto.mood ? MOODS.find((m) => m.id === foto.mood) : null;
+  const aspectRatio = ASPECT_POR_FORMATO[foto.formato] || '1 / 1';
 
   return (
     <div
@@ -13,7 +20,7 @@ export default function PolaroidCard({ foto, index = 0 }) {
       style={{ transform: `rotate(${rotation}deg)` }}
     >
       {/* Imagen */}
-      <div className="relative overflow-hidden rounded-sm bg-rosa-suave" style={{ aspectRatio: '1' }}>
+      <div className="relative overflow-hidden rounded-sm bg-rosa-suave" style={{ aspectRatio }}>
         {foto.pendiente && (
           <span className="absolute top-1.5 right-1.5 z-10 px-1.5 py-0.5 rounded-full bg-white/85 text-[10px] font-sans text-terracota shadow-sm">
             subiendo…

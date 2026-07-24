@@ -9,6 +9,12 @@ const SPOTIFY_PLACEHOLDER = 'https://open.spotify.com/embed/playlist/37i9dQZF1DX
 
 const ROTATIONS_ALBUM = [-1.2, 0.8, -0.5, 1.1, 0, -0.9, 0.6, -0.4, 0.9, -0.7];
 
+const ALBUM_FORMATO = {
+  vertical: { aspectRatio: '9 / 16', width: '130px' },
+  cuadrado: { aspectRatio: '1 / 1', width: '160px' },
+  horizontal: { aspectRatio: '16 / 9', width: '190px' },
+};
+
 export default function AlbumScreen() {
   const [fotos, setFotos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,6 +135,7 @@ export default function AlbumScreen() {
                 const rotation = ROTATIONS_ALBUM[fotoIdx % ROTATIONS_ALBUM.length];
                 const mood = foto.mood ? MOODS.find((m) => m.id === foto.mood) : null;
                 const isLeft = fotoIdx % 2 === 0;
+                const { aspectRatio, width } = ALBUM_FORMATO[foto.formato] || ALBUM_FORMATO.cuadrado;
 
                 return (
                   <div
@@ -140,11 +147,11 @@ export default function AlbumScreen() {
                       className="polaroid-wrap flex-shrink-0"
                       style={{
                         transform: `rotate(${rotation}deg)`,
-                        width: '160px',
+                        width,
                         position: 'relative',
                       }}
                     >
-                      <div className="overflow-hidden rounded-sm bg-rosa-suave" style={{ aspectRatio: '1' }}>
+                      <div className="overflow-hidden rounded-sm bg-rosa-suave" style={{ aspectRatio }}>
                         {foto.imageUrl || foto.imageData ? (
                           <img
                             src={foto.imageUrl || foto.imageData}
