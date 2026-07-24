@@ -33,3 +33,19 @@ export function suscribirComentarios(fotoId, onNuevoComentario) {
 
   return () => supabase.removeChannel(canal);
 }
+
+// Trae solo el foto_id de todos los comentarios, para contar cuántos tiene cada miniatura.
+export async function obtenerTodosFotoIdsConComentario() {
+  const { data, error } = await supabase.from('comentarios').select('foto_id');
+  if (error) throw error;
+  return data.map((c) => c.foto_id);
+}
+
+// Para refrescar los conteos en las miniaturas cuando llega cualquier comentario nuevo.
+export function suscribirTodosComentarios(onNuevo) {
+  const canal = supabase
+    .channel('comentarios-todos')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comentarios' }, onNuevo)
+    .subscribe();
+  return () => supabase.removeChannel(canal);
+}

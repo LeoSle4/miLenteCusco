@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { MOODS } from './MoodPicker';
 import { obtenerComentarios, agregarComentario, suscribirComentarios } from '../lib/comentarios';
+import { obtenerReacciones, alternarReaccion, suscribirReacciones } from '../lib/reacciones';
+import { REACCIONES } from './ReaccionIcons';
 import Em from './Em';
 
 const ASPECT_POR_FORMATO = {
@@ -16,6 +18,7 @@ const NOMBRE_POR_ROL = {
 
 export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
   const [comentarios, setComentarios] = useState([]);
+  const [reacciones, setReacciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState('');
   const [enviando, setEnviando] = useState(false);
@@ -32,20 +35,41 @@ export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
       return;
     }
     let activo = true;
-    obtenerComentarios(foto.id).then((data) => {
+    Promise.all([obtenerComentarios(foto.id), obtenerReacciones(foto.id)]).then(([com, reac]) => {
       if (activo) {
-        setComentarios(data);
+        setComentarios(com);
+        setReacciones(reac);
         setCargando(false);
       }
     });
-    const desuscribir = suscribirComentarios(foto.id, (nuevo) => {
+    const desuscribirComentarios = suscribirComentarios(foto.id, (nuevo) => {
       setComentarios((prev) => (prev.some((c) => c.id === nuevo.id) ? prev : [...prev, nuevo]));
+    });
+    const desuscribirReacciones = suscribirReacciones(foto.id, () => {
+      obtenerReacciones(foto.id).then(setReacciones);
     });
     return () => {
       activo = false;
-      desuscribir();
+      desuscribirComentarios();
+      desuscribirReacciones();
     };
   }, [foto.id, esFotoPendiente]);
+
+  async function handleReaccion(tipo) {
+    if (esFotoPendiente) return;
+    // Actualización optimista para que se sienta instantáneo.
+    const yaReacciono = reacciones.some((r) => r.autor === autor && r.tipo === tipo);
+    setReacciones((prev) =>
+      yaReacciono
+        ? prev.filter((r) => !(r.autor === autor && r.tipo === tipo))
+        : [...prev, { autor, tipo, foto_id: foto.id }]
+    );
+    try {
+      await alternarReaccion({ fotoId: foto.id, autor, tipo });
+    } catch (err) {
+      obtenerReacciones(foto.id).then(setReacciones);
+    }
+  }
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -116,6 +140,33 @@ export default function FotoDetalle({ foto, retoTexto, rol, onClose }) {
             <div className="flex items-center gap-1.5 mb-4">
               <span className="scale-90 inline-block">{mood.svg}</span>
               <span className="text-sm text-gris-calido font-sans">{mood.label}</span>
+            </div>
+          )}
+
+          {/* Reacciones */}
+          {!esFotoPendiente && (
+            <div className="flex gap-2 mb-2">
+              {REACCIONES.map(({ tipo, Icon, etiqueta }) => {
+                const conteo = reacciones.filter((r) => r.tipo === tipo).length;
+                const yoReaccione = reacciones.some((r) => r.autor === autor && r.tipo === tipo);
+                return (
+                  <button
+                    key={tipo}
+                    onClick={() => handleReaccion(tipo)}
+                    aria-label={etiqueta}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full border transition-all ${
+                      yoReaccione
+                        ? 'border-rosa-principal bg-rosa-suave scale-105'
+                        : 'border-rosa-principal/20 bg-white hover:bg-rosa-suave/50'
+                    }`}
+                  >
+                    <Icon size={18} />
+                    {conteo > 0 && (
+                      <span className="font-sans text-xs font-semibold text-gris-calido">{conteo}</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
 

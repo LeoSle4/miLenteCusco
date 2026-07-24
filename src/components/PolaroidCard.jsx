@@ -16,7 +16,7 @@ const ASPECT_POR_FORMATO = {
   horizontal: '16 / 9',
 };
 
-export default function PolaroidCard({ foto, index = 0, onClick }) {
+export default function PolaroidCard({ foto, index = 0, onClick, numInteracciones = 0 }) {
   const rotation = ROTATIONS[index % ROTATIONS.length];
   const mood = foto.mood ? MOODS.find((m) => m.id === foto.mood) : null;
   const aspectRatio = ASPECT_POR_FORMATO[foto.formato] || '1 / 1';
@@ -39,6 +39,14 @@ export default function PolaroidCard({ foto, index = 0, onClick }) {
         {foto.pendiente && (
           <span className="absolute top-1.5 right-1.5 z-10 px-1.5 py-0.5 rounded-full bg-white/85 text-[10px] font-sans text-terracota shadow-sm">
             subiendo…
+          </span>
+        )}
+        {!foto.pendiente && numInteracciones > 0 && (
+          <span className="absolute top-1.5 left-1.5 z-10 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-white/85 text-[10px] font-sans font-semibold text-rosa-oscuro shadow-sm">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            </svg>
+            {numInteracciones}
           </span>
         )}
         {foto.imageUrl || foto.imageData ? (

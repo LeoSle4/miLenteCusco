@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { obtenerFotos, obtenerFotosPendientes } from '../lib/fotos';
 import { itinerario, FECHA_INICIO, obtenerTextoReto } from '../data/itinerary';
 import { useAuth } from '../AuthContext';
@@ -21,6 +21,49 @@ export default function AlbumScreen() {
   const [fotos, setFotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
+  const [exportando, setExportando] = useState(false);
+  const albumRef = useRef(null);
+
+  async function exportarPDF() {
+    if (!albumRef.current) return;
+    setExportando(true);
+    try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ]);
+      const canvas = await html2canvas(albumRef.current, {
+        scale: 1.5,
+        useCORS: true,
+        backgroundColor: '#FFF3E4',
+        ignoreElements: (el) => el.dataset?.excluirExport === 'true',
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save('mi-lente-en-cusco.pdf');
+    } catch (err) {
+      // Silencioso: si falla la exportación, ella sigue viendo el álbum en la web normalmente.
+    } finally {
+      setExportando(false);
+    }
+  }
 
   useEffect(() => {
     Promise.all([obtenerFotos(), obtenerFotosPendientes()]).then(([remotas, pendientes]) => {
@@ -36,6 +79,7 @@ export default function AlbumScreen() {
   }));
 
   const totalFotos = fotos.length;
+  const fotoDestacada = fotos.find((f) => f.imageUrl && !f.pendiente);
   const fechaInicio = FECHA_INICIO;
   const fechaFin = new Date(FECHA_INICIO);
   fechaFin.setDate(fechaFin.getDate() + 4);
@@ -57,20 +101,35 @@ export default function AlbumScreen() {
   }
 
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-rosa-suave via-crema to-rosa-suave">
+    <div className="min-h-dvh bg-gradient-to-b from-rosa-suave via-crema to-rosa-suave" ref={albumRef}>
       {/* ── PORTADA ────────────────────────────────────────────────── */}
       <section className="album-portada px-6 py-16 text-center gap-6">
         {/* Decoración de esquinas */}
         <div className="absolute top-4 left-4 text-rosa-principal/20 text-4xl select-none">✦</div>
         <div className="absolute top-4 right-4 text-rosa-principal/20 text-4xl select-none">✦</div>
 
-        {/* Mascota grande */}
-        <div className="animate-flotar-lento">
-          <img
-            src="/mascota/pet_camera.png"
-            alt="Mascota del álbum"
-            className="w-48 h-48 mascota-img"
-          />
+        {/* Mascota grande, o la primera foto del viaje si ya hay alguna */}
+        <div className="animate-flotar-lento relative">
+          {fotoDestacada ? (
+            <div className="relative w-48 h-48">
+              <img
+                src={fotoDestacada.imageUrl}
+                alt="Portada del álbum"
+                className="w-48 h-48 rounded-full object-cover border-4 border-white shadow-polaroid"
+              />
+              <img
+                src="/mascota/pet_happy.png"
+                alt=""
+                className="absolute -bottom-2 -right-2 w-16 h-16 mascota-img"
+              />
+            </div>
+          ) : (
+            <img
+              src="/mascota/pet_camera.png"
+              alt="Mascota del álbum"
+              className="w-48 h-48 mascota-img"
+            />
+          )}
         </div>
 
         {/* Título */}
@@ -239,8 +298,30 @@ export default function AlbumScreen() {
           Este álbum es tuyo, siempre.
         </p>
 
+        {/* Botón de descarga */}
+        <button
+          onClick={exportarPDF}
+          disabled={exportando}
+          data-excluir-export="true"
+          className="mb-8 inline-flex items-center gap-2 px-5 py-3 rounded-full border border-rosa-principal/40 bg-white text-rosa-oscuro font-sans text-sm font-semibold hover:bg-rosa-suave transition-all disabled:opacity-50"
+        >
+          {exportando ? (
+            <>
+              <div className="w-4 h-4 rounded-full border-2 border-rosa-principal border-t-transparent animate-spin" />
+              Preparando PDF…
+            </>
+          ) : (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              Descargar álbum en PDF
+            </>
+          )}
+        </button>
+
         {/* Widget Spotify */}
-        <div className="max-w-sm mx-auto">
+        <div className="max-w-sm mx-auto" data-excluir-export="true">
           <p className="font-sans text-xs text-gris-calido mb-3 uppercase tracking-wide font-semibold">
             La playlist del viaje <Em>🎵</Em>
           </p>

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { itinerario, getDiaActual, obtenerTextoReto } from '../data/itinerary';
 import { obtenerFotosPorDia, obtenerFotosPendientes, suscribirFotos } from '../lib/fotos';
+import { contarCola } from '../lib/offlineQueue';
+import { obtenerConteosInteracciones, suscribirInteracciones } from '../lib/interacciones';
 import { useAuth } from '../AuthContext';
 import UploadModal from './UploadModal';
 import PolaroidCard from './PolaroidCard';
@@ -98,6 +100,8 @@ export default function DayScreen() {
   const [modalOpen, setModalOpen] = useState(false);
   const [retoPresel, setRetoPresel] = useState(null);
   const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
+  const [conteos, setConteos] = useState(new Map());
+  const [enCola, setEnCola] = useState(0);
 
   // Si el viaje terminó, ir al álbum
   useEffect(() => {
@@ -129,6 +133,27 @@ export default function DayScreen() {
       desuscribir();
     };
   }, [diaActual, cargarFotos]);
+
+  useEffect(() => {
+    obtenerConteosInteracciones().then(setConteos);
+    const desuscribir = suscribirInteracciones(() => {
+      obtenerConteosInteracciones().then(setConteos);
+    });
+    return desuscribir;
+  }, []);
+
+  useEffect(() => {
+    const actualizarCola = () => contarCola().then(setEnCola);
+    actualizarCola();
+    window.addEventListener('mlc:cola-actualizada', actualizarCola);
+    window.addEventListener('online', actualizarCola);
+    window.addEventListener('offline', actualizarCola);
+    return () => {
+      window.removeEventListener('mlc:cola-actualizada', actualizarCola);
+      window.removeEventListener('online', actualizarCola);
+      window.removeEventListener('offline', actualizarCola);
+    };
+  }, []);
 
   function abrirModal(retoId = null) {
     setRetoPresel(retoId);
@@ -246,7 +271,12 @@ export default function DayScreen() {
             <div className="masonry-cols">
               {fotos.map((foto, i) => (
                 <div key={foto.id} className="masonry-item">
-                  <PolaroidCard foto={foto} index={i} onClick={() => setFotoSeleccionada(foto)} />
+                  <PolaroidCard
+                    foto={foto}
+                    index={i}
+                    onClick={() => setFotoSeleccionada(foto)}
+                    numInteracciones={conteos.get(foto.id) || 0}
+                  />
                 </div>
               ))}
             </div>
@@ -263,6 +293,18 @@ export default function DayScreen() {
           <p className="font-manuscrita text-xl text-gris-calido">
             Todavía no hay fotos hoy...
           </p>
+        </div>
+      )}
+
+      {/* Cola offline pendiente */}
+      {enCola > 0 && (
+        <div className="fixed left-1/2 -translate-x-1/2 z-40" style={{ bottom: '5.75rem' }}>
+          <div className="offline-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M12 2v6M12 16v6M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24" />
+            </svg>
+            {enCola === 1 ? '1 foto esperando conexión' : `${enCola} fotos esperando conexión`}
+          </div>
         </div>
       )}
 

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { obtenerFotos, obtenerFotosPendientes, suscribirFotos } from '../lib/fotos';
+import { obtenerConteosInteracciones, suscribirInteracciones } from '../lib/interacciones';
 import { itinerario, obtenerTextoReto } from '../data/itinerary';
 import { useAuth } from '../AuthContext';
 import PolaroidCard from './PolaroidCard';
@@ -12,6 +13,9 @@ export default function GalleryScreen() {
   const [filtro, setFiltro] = useState(null); // null = todos los días
   const [loading, setLoading] = useState(true);
   const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
+  const [conteos, setConteos] = useState(new Map());
+  const [resumenLeo, setResumenLeo] = useState(null);
+  const yaCalculoResumen = useRef(false);
 
   useEffect(() => {
     cargarFotos();
@@ -22,6 +26,26 @@ export default function GalleryScreen() {
       desuscribir();
     };
   }, []);
+
+  useEffect(() => {
+    obtenerConteosInteracciones().then(setConteos);
+    const desuscribir = suscribirInteracciones(() => {
+      obtenerConteosInteracciones().then(setConteos);
+    });
+    return desuscribir;
+  }, []);
+
+  useEffect(() => {
+    if (rol !== 'leo' || loading || yaCalculoResumen.current) return;
+    yaCalculoResumen.current = true;
+    const clave = 'mlc_leo_ultima_visita';
+    const anterior = localStorage.getItem(clave);
+    if (anterior) {
+      const nuevas = fotos.filter((f) => !f.pendiente && new Date(f.created_at) > new Date(anterior)).length;
+      if (nuevas > 0) setResumenLeo(nuevas);
+    }
+    localStorage.setItem(clave, new Date().toISOString());
+  }, [rol, loading, fotos]);
 
   async function cargarFotos() {
     setLoading(true);
@@ -68,6 +92,18 @@ export default function GalleryScreen() {
           ))}
         </div>
       </div>
+
+      {/* Resumen para el espectador */}
+      {resumenLeo && (
+        <div className="px-5 pt-3">
+          <div className="rounded-2xl bg-rosa-suave border border-rosa-principal/30 px-4 py-3 flex items-center gap-2.5 animate-fade-in">
+            <Em size={20}>🌸</Em>
+            <p className="font-manuscrita text-lg text-rosa-oscuro">
+              {resumenLeo === 1 ? '1 foto nueva' : `${resumenLeo} fotos nuevas`} desde tu última visita
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Contenido */}
       <div className="px-5 py-4">
@@ -117,7 +153,12 @@ export default function GalleryScreen() {
                 <div className="masonry-cols">
                   {dia.fotos.map((foto, i) => (
                     <div key={foto.id} className="masonry-item">
-                      <PolaroidCard foto={foto} index={i} onClick={() => setFotoSeleccionada(foto)} />
+                      <PolaroidCard
+                        foto={foto}
+                        index={i}
+                        onClick={() => setFotoSeleccionada(foto)}
+                        numInteracciones={conteos.get(foto.id) || 0}
+                      />
                     </div>
                   ))}
                 </div>

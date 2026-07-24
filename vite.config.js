@@ -25,6 +25,9 @@ export default defineConfig({
       workbox: {
         // Solo cachea el shell de la app (HTML/JS/CSS) — las fotos siempre vienen de Supabase.
         globPatterns: ['**/*.{js,css,html,svg,woff2}'],
+        // html2canvas/jsPDF son pesados y solo se usan al exportar el álbum: no vale la
+        // pena precachearlos para todos, se descargan solos la primera vez que se usan.
+        globIgnores: ['**/html2canvas*.js', '**/jspdf*.js', '**/purify*.js'],
       },
     }),
   ],
