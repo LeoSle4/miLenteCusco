@@ -80,15 +80,20 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
     setError('');
 
     try {
-      // Comprime primero conservando buena resolución (además corrige la orientación EXIF
-      // de las fotos del iPhone). El recorte lo hace ella misma en el paso siguiente.
-      const options = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 2000,
-        initialQuality: 0.9,
-        useWebWorker: true,
-      };
-      const compressed = await imageCompression(f, options);
+      let compressed = f;
+      try {
+        const options = {
+          maxSizeMB: 2,
+          maxWidthOrHeight: 2000,
+          initialQuality: 0.9,
+          useWebWorker: true,
+        };
+        compressed = await imageCompression(f, options);
+      } catch (compErr) {
+        console.warn('Compresión falló, usando archivo original:', compErr);
+        compressed = f;
+      }
+
       setCrop({ x: 0, y: 0 });
       setZoom(1);
       setCroppedAreaPixels(null);
@@ -96,6 +101,7 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
       setCroppedPreview(null);
       setRawPreview(URL.createObjectURL(compressed));
     } catch (err) {
+      console.error(err);
       setError('No se pudo procesar la imagen. Intenta de nuevo.');
     } finally {
       setCompressing(false);
@@ -364,7 +370,6 @@ export default function UploadModal({ onClose, onSaved, diaActual, retos, retoPr
                 ref={inputRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 className="hidden"
                 onChange={handleFileChange}
                 id="input-foto"
