@@ -60,26 +60,10 @@ export const itinerario = [
   },
   {
     dia: 3,
-    titulo: 'La Montaña',
-    lugares: '¿Laguna Humantay o Vinicunca?',
-    descripcion: 'Puede ser el día más activo o el día de descanso. ',
-    retos: [
-      {
-        id: 'r3-1',
-        texto: 'Los colores de la montaña o tu desayuno levanta muertos.',
-        icono: 'photo',
-      },
-      {
-        id: 'r3-2',
-        texto: 'Tus propias huellas en el camino o tu acostada en tu cama sin hacer nada.',
-        icono: 'footprint',
-      },
-      {
-        id: 'r3-3',
-        texto: 'El paisaje cuando llegues a la cima o la noche de cusco.',
-        icono: 'telescope',
-      },
-    ],
+    titulo: 'Misterio',
+    lugares: 'Por descubrir...',
+    descripcion: 'Día para solo fluir.',
+    retos: [],
   },
   {
     dia: 4,
